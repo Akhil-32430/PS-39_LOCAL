@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNotifications } from "./NotificationContext.jsx";
+import { useToast } from "./ToastContext.jsx";
 
 const AuthContext = createContext(null);
 
@@ -12,6 +13,10 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => {
     return localStorage.getItem("token") || null;
   });
+
+  // notification hooks (providers are above AuthProvider in tree)
+  const { addNotification } = useNotifications();
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (user && token) {
@@ -27,8 +32,8 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
     setToken(tokenVal);
     try {
-      const { addNotification } = useNotifications();
       if (addNotification) addNotification({ title: 'Logged in', message: `Welcome back, ${userData.name || 'user'}`, type: 'success', timeout: 4000 });
+      if (showToast) showToast('Login successful', 'info', 3000);
     } catch (err) {}
   };
 
@@ -36,8 +41,8 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
     try {
-      const { addNotification } = useNotifications();
       if (addNotification) addNotification({ title: 'Logged out', message: 'You have been logged out', type: 'info', timeout: 3500 });
+      if (showToast) showToast('Logged out successfully', 'info', 2500);
     } catch (err) {}
   };
 

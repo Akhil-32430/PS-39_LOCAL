@@ -36,13 +36,14 @@ export const NotificationProvider = ({ children }) => {
     timers.current.set(id, t);
   };
 
-  const addNotification = ({ title = "Notification", message = "You have a new notification.", type = "info", timeout = 5000 }) => {
+  // set default timeout to 1 second (1000ms)
+  const addNotification = ({ title = "Notification", message = "You have a new notification.", type = "info", timeout = 1000 }) => {
     const id = `${Date.now()}-${Math.random()}`;
     const alert = { id, title, message, type, remaining: timeout, createdAt: Date.now(), closing: false };
     setAlerts((s) => [alert, ...s].slice(0, 10));
 
     // also show a toast for quick feedback
-    try { showToast(`${title}: ${message}`, type === 'error' ? 'danger' : 'info', Math.max(3000, timeout)); } catch (e) {}
+    try { showToast(`${title}: ${message}`, type === 'error' ? 'danger' : 'info', Math.max(1000, timeout)); } catch (e) {}
 
     scheduleRemove(id, timeout);
 
@@ -112,9 +113,7 @@ export const NotificationProvider = ({ children }) => {
                 <div style={{ fontWeight: 700 }}>{a.title}</div>
                 <div className="small muted" style={{ marginTop: 4 }}>{a.message}</div>
               </div>
-              <div>
-                <button className="btn btn-sm" onClick={() => removeNotification(a.id)}>Close</button>
-              </div>
+              {/* Close button removed — notifications auto-dismiss after timeout */}
             </div>
           </div>
         ))}
